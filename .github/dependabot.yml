@@ -5,7 +5,7 @@ version: 2
 enable-beta-ecosystems: true
 updates:
   - package-ecosystem: "pub"
-    directory: "packages/amazon_ses_node"
+    directory: "packages/aws_ses_node"
     schedule:
       interval: "monthly"
   - package-ecosystem: "github-actions"

@@ -1,10 +1,8 @@
-/// Support for doing something awesome.
-///
-/// More dartdocs go here.
+@Deprecated('Internal js API')
 library;
 
-export 'src/aws_node.dart' show awsClientSesNodeJs;
-export 'src/bindings.dart'
+export 'aws_node_js.dart' show awsClientSesNodeJs;
+export 'bindings.dart'
     show
         AwsSdkClientSesExt,
         AwsSdkClientSes,

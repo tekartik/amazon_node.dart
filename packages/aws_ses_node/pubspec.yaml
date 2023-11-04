@@ -1,4 +1,4 @@
-name: tekartik_amazon_ses_node
+name: tekartik_aws_ses_node
 description: Send email in node environment
 version: 0.1.0
 publish_to: none

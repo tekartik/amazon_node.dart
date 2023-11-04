@@ -43,6 +43,15 @@ extension AwsSesClientExt on AwsSesClient {
 @JS()
 @anonymous
 @staticInterop
+class AwsSesSendMailResult {}
+
+extension AwsSesSendMailResultExt on AwsSesSendMailResult {
+  external String get MessageId;
+}
+
+@JS()
+@anonymous
+@staticInterop
 abstract class AwsSesSendMailCommand {}
 
 extension AwsSdkClientSesExt on AwsSdkClientSes {
@@ -63,7 +72,10 @@ extension AwsSdkClientSesExt on AwsSdkClientSes {
 @staticInterop
 class AwsSesDestination {
   // Must have an unnamed factory constructor with named arguments.
-  external factory AwsSesDestination({List<String> ToAddresses});
+  external factory AwsSesDestination(
+      {List<String>? ToAddresses,
+      List<String>? CcAddresses,
+      List<String>? BccAddresses});
 }
 
 @JS()
@@ -81,7 +93,7 @@ class AwsSesMessage {
 class AwsSesMessageBody {
   // Must have an unnamed factory constructor with named arguments.
   external factory AwsSesMessageBody(
-      {AwsSesMessageContent Html, AwsSesMessageContent Text});
+      {AwsSesMessageContent? Html, AwsSesMessageContent? Text});
 }
 
 @JS()
