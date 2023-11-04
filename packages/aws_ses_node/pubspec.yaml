@@ -1,6 +1,6 @@
 name: tekartik_aws_ses_node
 description: Send email in node environment
-version: 0.1.0
+version: 0.1.1
 publish_to: none
 
 environment:

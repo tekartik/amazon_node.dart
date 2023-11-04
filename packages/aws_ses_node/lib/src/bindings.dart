@@ -110,7 +110,10 @@ class AwsSesMessageContent {
 class AwsSesSendMailOptions {
   // Must have an unnamed factory constructor with named arguments.
   external factory AwsSesSendMailOptions(
-      {AwsSesDestination Destination, AwsSesMessage Message, String Source});
+      {AwsSesDestination Destination,
+      AwsSesMessage Message,
+      String Source,
+      List<String>? ReplyToAddresses});
 }
 
 //  Destination: {
