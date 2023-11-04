@@ -58,7 +58,8 @@ class AwsSesClient {
                   Body: js.AwsSesMessageBody(
                       Html: message.html?.toJs(), Text: message.text?.toJs()),
                   Subject: message.subject.toJs()),
-              Source: message.from));
+              Source: message.from,
+              ReplyToAddresses: message.replyTo));
       var resultJs = (await promiseToFuture(awsSesClientJs.send(commandJs)))
           as js.AwsSesSendMailResult;
       return AwsSesSendMailResult(messageId: resultJs.MessageId);
@@ -73,18 +74,21 @@ class AwsSesMessage {
   final List<String>? to;
   final List<String>? cc;
   final List<String>? bcc;
+  final List<String>? replyTo;
   final AwsSesContent subject;
   final AwsSesContent? text;
   final AwsSesContent? html;
 
-  AwsSesMessage(
-      {required this.from,
-      this.to,
-      this.cc,
-      this.bcc,
-      required this.subject,
-      this.text,
-      this.html});
+  AwsSesMessage({
+    required this.from,
+    this.to,
+    this.cc,
+    this.bcc,
+    required this.subject,
+    this.text,
+    this.html,
+    this.replyTo,
+  });
 }
 
 class AwsSesContent {
