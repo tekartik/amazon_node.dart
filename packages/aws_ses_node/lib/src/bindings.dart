@@ -2,8 +2,8 @@
 library;
 // ignore_for_file: non_constant_identifier_names
 
-import 'dart:js_interop';
-import 'dart:js_util';
+import 'package:js/js.dart';
+import 'package:js/js_util.dart';
 
 @JS()
 @anonymous

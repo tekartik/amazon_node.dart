@@ -1,24 +1,18 @@
-import 'dart:js_util';
+import 'package:js/js_util.dart';
 
-import 'aws_node_js.dart';
 import 'bindings.dart' as js;
-
-/// Aws credentials.
-class AwsCredentials {
-  final String accessKeyId;
-  final String secretAccessKey;
-
-  AwsCredentials({required this.accessKeyId, required this.secretAccessKey});
-}
+import 'ses_common.dart';
+export 'platform/platform.dart' show awsSes;
 
 /// AWS SES.
-class AwsSes {
+class AwsSesNode implements AwsSes {
   final js.AwsSdkClientSes awsSdkClientSesJs;
 
   /// Create new SES client.
+  @override
   AwsSesClient sesClient(
       {required String region, required AwsCredentials credentials}) {
-    return AwsSesClient(
+    return AwsSesClientNode(
         this,
         awsSdkClientSesJs.sesClient(js.AwsSesClientOptions(
             region: region,
@@ -27,25 +21,17 @@ class AwsSes {
                 secretAccessKey: credentials.secretAccessKey))));
   }
 
-  AwsSes(this.awsSdkClientSesJs);
-}
-
-class AwsSesException implements Exception {
-  final String message;
-
-  AwsSesException(this.message);
-
-  @override
-  String toString() => 'AwsSesException($message)';
+  AwsSesNode(this.awsSdkClientSesJs);
 }
 
 /// Client
-class AwsSesClient {
-  final AwsSes awsSes;
+class AwsSesClientNode implements AwsSesClient {
+  final AwsSesNode awsSes;
   final js.AwsSesClient awsSesClientJs;
 
-  AwsSesClient(this.awsSes, this.awsSesClientJs);
+  AwsSesClientNode(this.awsSes, this.awsSesClientJs);
 
+  @override
   Future<AwsSesSendMailResult> sendMail(AwsSesMessage message) async {
     try {
       var commandJs = awsSes.awsSdkClientSesJs.sendMailCommand(
@@ -69,51 +55,8 @@ class AwsSesClient {
   }
 }
 
-class AwsSesMessage {
-  final String from;
-  final List<String>? to;
-  final List<String>? cc;
-  final List<String>? bcc;
-  final List<String>? replyTo;
-  final AwsSesContent subject;
-  final AwsSesContent? text;
-  final AwsSesContent? html;
-
-  AwsSesMessage({
-    required this.from,
-    this.to,
-    this.cc,
-    this.bcc,
-    required this.subject,
-    this.text,
-    this.html,
-    this.replyTo,
-  });
-}
-
-class AwsSesContent {
-  static const String charsetUtf8 = 'UTF-8';
-  final String charset;
-  final String data;
-
-  AwsSesContent({this.charset = charsetUtf8, required this.data});
-}
-
 extension _AwsSesContextExtPrv on AwsSesContent {
   js.AwsSesMessageContent toJs() {
     return js.AwsSesMessageContent(Charset: charset, Data: data);
   }
 }
-
-class AwsSesSendMailResult {
-  /// Non null means success.
-  final String? messageId;
-
-  AwsSesSendMailResult({required this.messageId});
-
-  @override
-  String toString() => 'AwsSesSendMailResult($messageId)';
-}
-
-/// Global AWS SES instance.
-final awsSes = AwsSes(awsClientSesNodeJs);

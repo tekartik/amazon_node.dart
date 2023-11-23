@@ -8,6 +8,7 @@ environment:
 
 # Add regular dependencies here.
 dependencies:
+  js:
   tekartik_common_utils:
     git:
       url: https://github.com/tekartik/common_utils.dart
