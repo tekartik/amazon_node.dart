@@ -1,10 +1,8 @@
 import 'package:js/js_util.dart';
-import 'package:tekartik_aws_ses_node/src/js_interop_utils.dart';
 
-import 'bindings.dart' as js;
+import 'bindings_legacy.dart' as js;
 import 'ses_common.dart';
-
-export 'platform/platform.dart' show awsSes;
+export 'platform_legacy/platform.dart' show awsSes;
 
 /// AWS SES.
 class AwsSesNode implements AwsSes {
@@ -39,15 +37,15 @@ class AwsSesClientNode implements AwsSesClient {
       var commandJs = awsSes.awsSdkClientSesJs.sendMailCommand(
           js.AwsSesSendMailOptions(
               Destination: js.AwsSesDestination(
-                  ToAddresses: message.to?.stringListToJSArray(),
-                  CcAddresses: message.cc?.stringListToJSArray(),
-                  BccAddresses: message.bcc?.stringListToJSArray()),
+                  ToAddresses: message.to,
+                  CcAddresses: message.cc,
+                  BccAddresses: message.bcc),
               Message: js.AwsSesMessage(
                   Body: js.AwsSesMessageBody(
                       Html: message.html?.toJs(), Text: message.text?.toJs()),
                   Subject: message.subject.toJs()),
               Source: message.from,
-              ReplyToAddresses: message.replyTo?.stringListToJSArray()));
+              ReplyToAddresses: message.replyTo));
       var resultJs = (await promiseToFuture(awsSesClientJs.send(commandJs)))
           as js.AwsSesSendMailResult;
       return AwsSesSendMailResult(messageId: resultJs.MessageId);

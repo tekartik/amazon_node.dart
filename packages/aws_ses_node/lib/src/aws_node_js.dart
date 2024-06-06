@@ -1,5 +1,4 @@
-import 'package:node_interop/node.dart';
-import 'package:node_interop/node_interop.dart';
+import 'package:tekartik_core_node/require.dart';
 import 'bindings.dart' as js;
 
-final awsClientSesNodeJs = require('@aws-sdk/client-ses') as js.AwsSdkClientSes;
+final awsClientSesNodeJs = require<js.AwsSdkClientSes>('@aws-sdk/client-ses');

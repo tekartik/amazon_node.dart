@@ -4,11 +4,17 @@ version: 0.1.2
 publish_to: none
 
 environment:
-  sdk: ^3.1.4
+  sdk: '>=3.4.0-0 <4.0.0'
 
 # Add regular dependencies here.
 dependencies:
   js:
+  tekartik_js_utils_interop:
+    git:
+      url: https://github.com/tekartik/js_utils.dart
+      path: js_utils_interop
+      ref: dart3a
+    version: '>=0.1.0'
   tekartik_common_utils:
     git:
       url: https://github.com/tekartik/common_utils.dart
@@ -22,6 +28,11 @@ dependencies:
     version: '>=0.1.0'
   process_run:
   node_interop:
+  tekartik_core_node:
+    git:
+      url: https://github.com/tekartik/common_node.dart
+      path: core_node
+      ref: dart3a
 dev_dependencies:
   lints: '>=2.0.0'
   test: '>=1.21.0'
