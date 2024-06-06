@@ -1,4 +1,5 @@
-import 'package:js/js_util.dart';
+import 'dart:js_interop';
+
 import 'package:tekartik_aws_ses_node/src/js_interop_utils.dart';
 
 import 'bindings.dart' as js;
@@ -48,7 +49,7 @@ class AwsSesClientNode implements AwsSesClient {
                   Subject: message.subject.toJs()),
               Source: message.from,
               ReplyToAddresses: message.replyTo?.stringListToJSArray()));
-      var resultJs = (await promiseToFuture(awsSesClientJs.send(commandJs)))
+      var resultJs = (await (awsSesClientJs.send(commandJs).toDart))
           as js.AwsSesSendMailResult;
       return AwsSesSendMailResult(messageId: resultJs.MessageId);
     } catch (e) {
