@@ -13,8 +13,10 @@ extension type AwsCredentials._(js.JSObject _) implements js.JSObject {
 
 extension type AwsSesClientOptions._(js.JSObject _) implements js.JSObject {
   // Must have an unnamed factory constructor with named arguments.
-  external factory AwsSesClientOptions(
-      {String region, AwsCredentials credentials});
+  external factory AwsSesClientOptions({
+    String region,
+    AwsCredentials credentials,
+  });
 }
 
 extension AwsSesClientOptionsExt on AwsSesClientOptions {
@@ -50,22 +52,27 @@ extension AwsSdkClientSesExt on AwsSdkClientSes {
 
 extension type AwsSesDestination._(js.JSObject _) implements js.JSObject {
   // Must have an unnamed factory constructor with named arguments.
-  external factory AwsSesDestination(
-      {js.JSArray<js.JSString>? ToAddresses,
-      js.JSArray<js.JSString>? CcAddresses,
-      js.JSArray<js.JSString>? BccAddresses});
+  external factory AwsSesDestination({
+    js.JSArray<js.JSString>? ToAddresses,
+    js.JSArray<js.JSString>? CcAddresses,
+    js.JSArray<js.JSString>? BccAddresses,
+  });
 }
 
 extension type AwsSesMessage._(js.JSObject _) implements js.JSObject {
   // Must have an unnamed factory constructor with named arguments.
-  external factory AwsSesMessage(
-      {AwsSesMessageBody Body, AwsSesMessageContent Subject});
+  external factory AwsSesMessage({
+    AwsSesMessageBody Body,
+    AwsSesMessageContent Subject,
+  });
 }
 
 extension type AwsSesMessageBody._(js.JSObject _) implements js.JSObject {
   // Must have an unnamed factory constructor with named arguments.
-  external factory AwsSesMessageBody(
-      {AwsSesMessageContent? Html, AwsSesMessageContent? Text});
+  external factory AwsSesMessageBody({
+    AwsSesMessageContent? Html,
+    AwsSesMessageContent? Text,
+  });
 }
 
 extension type AwsSesMessageContent._(js.JSObject _) implements js.JSObject {
@@ -75,11 +82,12 @@ extension type AwsSesMessageContent._(js.JSObject _) implements js.JSObject {
 
 extension type AwsSesSendMailOptions._(js.JSObject _) implements js.JSObject {
   // Must have an unnamed factory constructor with named arguments.
-  external factory AwsSesSendMailOptions(
-      {AwsSesDestination Destination,
-      AwsSesMessage Message,
-      String Source,
-      js.JSArray<js.JSString>? ReplyToAddresses});
+  external factory AwsSesSendMailOptions({
+    AwsSesDestination Destination,
+    AwsSesMessage Message,
+    String Source,
+    js.JSArray<js.JSString>? ReplyToAddresses,
+  });
 }
 
 //  Destination: {

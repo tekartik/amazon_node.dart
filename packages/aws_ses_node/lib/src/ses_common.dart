@@ -43,8 +43,10 @@ abstract class AwsSesClient {
 
 abstract class AwsSes {
   /// Create new SES client.
-  AwsSesClient sesClient(
-      {required String region, required AwsCredentials credentials});
+  AwsSesClient sesClient({
+    required String region,
+    required AwsCredentials credentials,
+  });
 }
 
 class AwsSesContent {

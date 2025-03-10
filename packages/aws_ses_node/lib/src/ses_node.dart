@@ -13,15 +13,22 @@ class AwsSesNode implements AwsSes {
 
   /// Create new SES client.
   @override
-  AwsSesClient sesClient(
-      {required String region, required AwsCredentials credentials}) {
+  AwsSesClient sesClient({
+    required String region,
+    required AwsCredentials credentials,
+  }) {
     return AwsSesClientNode(
-        this,
-        awsSdkClientSesJs.sesClient(js.AwsSesClientOptions(
-            region: region,
-            credentials: js.AwsCredentials(
-                accessKeyId: credentials.accessKeyId,
-                secretAccessKey: credentials.secretAccessKey))));
+      this,
+      awsSdkClientSesJs.sesClient(
+        js.AwsSesClientOptions(
+          region: region,
+          credentials: js.AwsCredentials(
+            accessKeyId: credentials.accessKeyId,
+            secretAccessKey: credentials.secretAccessKey,
+          ),
+        ),
+      ),
+    );
   }
 
   AwsSesNode(this.awsSdkClientSesJs);
@@ -38,19 +45,26 @@ class AwsSesClientNode implements AwsSesClient {
   Future<AwsSesSendMailResult> sendMail(AwsSesMessage message) async {
     try {
       var commandJs = awsSes.awsSdkClientSesJs.sendMailCommand(
-          js.AwsSesSendMailOptions(
-              Destination: js.AwsSesDestination(
-                  ToAddresses: message.to?.stringListToJSArray(),
-                  CcAddresses: message.cc?.stringListToJSArray(),
-                  BccAddresses: message.bcc?.stringListToJSArray()),
-              Message: js.AwsSesMessage(
-                  Body: js.AwsSesMessageBody(
-                      Html: message.html?.toJs(), Text: message.text?.toJs()),
-                  Subject: message.subject.toJs()),
-              Source: message.from,
-              ReplyToAddresses: message.replyTo?.stringListToJSArray()));
-      var resultJs = (await (awsSesClientJs.send(commandJs).toDart))
-          as js.AwsSesSendMailResult;
+        js.AwsSesSendMailOptions(
+          Destination: js.AwsSesDestination(
+            ToAddresses: message.to?.stringListToJSArray(),
+            CcAddresses: message.cc?.stringListToJSArray(),
+            BccAddresses: message.bcc?.stringListToJSArray(),
+          ),
+          Message: js.AwsSesMessage(
+            Body: js.AwsSesMessageBody(
+              Html: message.html?.toJs(),
+              Text: message.text?.toJs(),
+            ),
+            Subject: message.subject.toJs(),
+          ),
+          Source: message.from,
+          ReplyToAddresses: message.replyTo?.stringListToJSArray(),
+        ),
+      );
+      var resultJs =
+          (await (awsSesClientJs.send(commandJs).toDart))
+              as js.AwsSesSendMailResult;
       return AwsSesSendMailResult(messageId: resultJs.MessageId);
     } catch (e) {
       throw AwsSesException(e.toString());
