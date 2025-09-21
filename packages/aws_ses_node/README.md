@@ -9,5 +9,4 @@ Amazon SES node helpers
     git:
       url: https://github.com/tekartik/amazon_node.dart
       path: packages/aws_ses_node
-      ref: dart3a
 ```
