@@ -8,8 +8,9 @@ import 'ses_common.dart';
 
 export 'platform/platform.dart' show awsSes;
 
-/// AWS SES.
+/// AWS SES Node.js implementation.
 class AwsSesNode implements AwsSes {
+  /// JS client.
   final js.AwsSdkClientSes awsSdkClientSesJs;
 
   /// Create new SES client.
@@ -32,14 +33,19 @@ class AwsSesNode implements AwsSes {
     );
   }
 
+  /// AWS SES Node.js implementation.
   AwsSesNode(this.awsSdkClientSesJs);
 }
 
-/// Client
+/// AWS SES Node.js client.
 class AwsSesClientNode implements AwsSesClient {
+  /// AWS SES Node.js implementation.
   final AwsSesNode awsSes;
+
+  /// JS client.
   final js.AwsSesClient awsSesClientJs;
 
+  /// AWS SES Node.js client.
   AwsSesClientNode(this.awsSes, this.awsSesClientJs);
 
   @override
