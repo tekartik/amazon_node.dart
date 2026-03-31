@@ -1,3 +1,5 @@
+import 'dart:typed_data';
+
 /// Aws credentials.
 class AwsCredentials {
   final String accessKeyId;
@@ -24,6 +26,7 @@ class AwsSesMessage {
   final AwsSesContent subject;
   final AwsSesContent? text;
   final AwsSesContent? html;
+  final List<AwsSesAttachment>? attachments;
 
   AwsSesMessage({
     required this.from,
@@ -34,6 +37,7 @@ class AwsSesMessage {
     this.text,
     this.html,
     this.replyTo,
+    this.attachments,
   });
 }
 
@@ -65,4 +69,16 @@ class AwsSesSendMailResult {
 
   @override
   String toString() => 'AwsSesSendMailResult($messageId)';
+}
+
+class AwsSesAttachment {
+  final String mimeType;
+  final String filename;
+  final Uint8List content;
+
+  AwsSesAttachment({
+    required this.mimeType,
+    required this.filename,
+    required this.content,
+  });
 }

@@ -26,7 +26,7 @@ extension AwsSesClientOptionsExt on AwsSesClientOptions {
 extension type AwsSesClient._(js.JSObject _) implements js.JSObject {}
 
 extension AwsSesClientExt on AwsSesClient {
-  external js.JSPromise<js.JSObject> send(AwsSesSendMailCommand command);
+  external js.JSPromise<js.JSObject> send(js.JSObject command);
 }
 
 extension type AwsSesSendMailResult._(js.JSObject _) implements js.JSObject {}
@@ -40,6 +40,7 @@ extension type AwsSesSendMailCommand._(js.JSObject _) implements js.JSObject {}
 extension AwsSdkClientSesExt on AwsSdkClientSes {
   external js.JSFunction get SESClient;
   external js.JSFunction get SendEmailCommand;
+  external js.JSFunction get SendRawEmailCommand;
 
   AwsSesClient sesClient(AwsSesClientOptions options) {
     return SESClient.callAsConstructor(options);
@@ -48,6 +49,24 @@ extension AwsSdkClientSesExt on AwsSdkClientSes {
   AwsSesSendMailCommand sendMailCommand(AwsSesSendMailOptions options) {
     return SendEmailCommand.callAsConstructor(options);
   }
+
+  AwsSesSendRawMailCommand sendRawMailCommand(AwsSesSendRawMailOptions options) {
+    return SendRawEmailCommand.callAsConstructor(options);
+  }
+}
+
+extension type AwsSesSendRawMailCommand._(js.JSObject _) implements js.JSObject {}
+
+extension type AwsSesRawMessage._(js.JSObject _) implements js.JSObject {
+  external factory AwsSesRawMessage({js.JSUint8Array Data});
+}
+
+extension type AwsSesSendRawMailOptions._(js.JSObject _) implements js.JSObject {
+  external factory AwsSesSendRawMailOptions({
+    js.JSArray<js.JSString>? Destinations,
+    String? Source,
+    AwsSesRawMessage RawMessage,
+  });
 }
 
 extension type AwsSesDestination._(js.JSObject _) implements js.JSObject {

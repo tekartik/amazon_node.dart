@@ -17,6 +17,7 @@ void main() {
     try {
       awsSes;
     } catch (e) {
+      // ignore: avoid_print
       print(e);
     }
   });
