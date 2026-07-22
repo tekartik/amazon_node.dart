@@ -1,59 +1,67 @@
 import 'dart:typed_data';
 
-/// Aws credentials.
+/// AWS access key credentials used to authenticate against the SES API.
 class AwsCredentials {
-  /// Access key ID.
+  /// The AWS access key ID.
   final String accessKeyId;
 
-  /// Secret access key.
+  /// The AWS secret access key paired with [accessKeyId].
   final String secretAccessKey;
 
-  /// Aws credentials.
+  /// Creates credentials from an [accessKeyId] and its matching
+  /// [secretAccessKey].
   AwsCredentials({required this.accessKeyId, required this.secretAccessKey});
 }
 
-/// AWS SES Exception.
+/// Thrown when an AWS SES operation (such as [AwsSesClient.sendMail]) fails.
 class AwsSesException implements Exception {
-  /// Exception message.
+  /// Human-readable description of what went wrong.
   final String message;
 
-  /// AWS SES Exception.
+  /// Creates an exception carrying the given error [message].
   AwsSesException(this.message);
 
   @override
   String toString() => 'AwsSesException($message)';
 }
 
-/// AWS SES message.
+/// An email message to send through [AwsSesClient.sendMail].
 class AwsSesMessage {
-  /// Sender email.
+  /// Sender email address.
   final String from;
 
-  /// Recipients.
+  /// Recipient email addresses, or `null`/empty if there are none.
   final List<String>? to;
 
-  /// Cc.
+  /// Cc (carbon copy) recipient email addresses, or `null`/empty if there
+  /// are none.
   final List<String>? cc;
 
-  /// Bcc.
+  /// Bcc (blind carbon copy) recipient email addresses, or `null`/empty if
+  /// there are none.
   final List<String>? bcc;
 
-  /// Reply-to.
+  /// Reply-to email addresses, or `null` to use [from] as the reply-to
+  /// address.
   final List<String>? replyTo;
 
-  /// Subject.
+  /// Message subject line.
   final AwsSesContent subject;
 
-  /// Text content.
+  /// Plain-text body, or `null` if the message has no text part.
   final AwsSesContent? text;
 
-  /// HTML content.
+  /// HTML body, or `null` if the message has no HTML part.
   final AwsSesContent? html;
 
-  /// Attachments.
+  /// File attachments to include, or `null`/empty if there are none.
   final List<AwsSesAttachment>? attachments;
 
-  /// AWS SES message.
+  /// Creates a message with the given [from] sender and [subject].
+  ///
+  /// [to], [cc], [bcc] and [replyTo] default to no recipients. [text] and/or
+  /// [html] provide the message body; [attachments] are optional files to
+  /// attach.
   AwsSesMessage({
     required this.from,
     this.to,
@@ -67,60 +75,71 @@ class AwsSesMessage {
   });
 }
 
-/// AWS SES client.
+/// A client bound to a specific AWS region and set of credentials, used to
+/// send email through SES. Obtain an instance via [AwsSes.sesClient].
 abstract class AwsSesClient {
-  /// Send mail.
+  /// Sends [message] through SES.
+  ///
+  /// Returns the [AwsSesSendMailResult] describing the outcome.
+  ///
+  /// Throws an [AwsSesException] if SES rejects the request.
   Future<AwsSesSendMailResult> sendMail(AwsSesMessage message);
 }
 
-/// AWS SES service.
+/// Entry point for creating [AwsSesClient] instances. The platform-specific
+/// implementation is exposed as the `awsSes` top-level getter.
 abstract class AwsSes {
-  /// Create new SES client.
+  /// Creates a client for sending mail through SES in the given [region]
+  /// (e.g. `'us-east-1'`), authenticated using [credentials].
   AwsSesClient sesClient({
     required String region,
     required AwsCredentials credentials,
   });
 }
 
-/// SES content.
+/// A piece of text content (such as a subject line or message body) with an
+/// associated character set.
 class AwsSesContent {
-  /// Default charset.
+  /// The `UTF-8` charset value, used as the default for [charset].
   static const String charsetUtf8 = 'UTF-8';
 
-  /// Charset.
+  /// Character set the [data] is encoded in.
   final String charset;
 
-  /// Data.
+  /// The text content itself.
   final String data;
 
-  /// SES content.
+  /// Creates content from [data], encoded using [charset] (defaults to
+  /// [charsetUtf8]).
   AwsSesContent({this.charset = charsetUtf8, required this.data});
 }
 
-/// AWS SES send mail result.
+/// The result of an [AwsSesClient.sendMail] call.
 class AwsSesSendMailResult {
-  /// Non null means success.
+  /// The SES message ID assigned to the sent message when the send
+  /// succeeded, or `null` if it failed.
   final String? messageId;
 
-  /// AWS SES send mail result.
+  /// Creates a result with the given [messageId] (`null` on failure).
   AwsSesSendMailResult({required this.messageId});
 
   @override
   String toString() => 'AwsSesSendMailResult($messageId)';
 }
 
-/// SES attachment.
+/// A file attached to an [AwsSesMessage].
 class AwsSesAttachment {
-  /// MIME type.
+  /// MIME type of [content] (e.g. `'application/pdf'`).
   final String mimeType;
 
-  /// Filename.
+  /// Name the attachment should be presented with (e.g. `'report.pdf'`).
   final String filename;
 
-  /// Content.
+  /// Raw bytes of the attached file.
   final Uint8List content;
 
-  /// SES attachment.
+  /// Creates an attachment named [filename] with the given [mimeType] and
+  /// raw [content] bytes.
   AwsSesAttachment({
     required this.mimeType,
     required this.filename,
