@@ -75,6 +75,7 @@ class AwsSesClientNode implements AwsSesClient {
       var resultJs =
           (await (awsSesClientJs.send(commandJs).toDart))
               as js.AwsSesSendMailResult;
+
       return AwsSesSendMailResult(messageId: resultJs.MessageId);
     } catch (e) {
       throw AwsSesException(e.toString());
@@ -161,6 +162,7 @@ class AwsSesClientNode implements AwsSesClient {
     var resultJs =
         (await (awsSesClientJs.send(commandJs).toDart))
             as js.AwsSesSendMailResult;
+
     return AwsSesSendMailResult(messageId: resultJs.MessageId);
   }
 }
