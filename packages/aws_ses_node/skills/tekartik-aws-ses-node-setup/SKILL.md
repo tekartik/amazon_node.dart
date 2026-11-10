@@ -80,11 +80,15 @@ function, a node CLI).
     `CcAddresses`, `BccAddresses`, `ReplyToAddresses` and the per part
     `charset`.
   * One attachment or more: a raw MIME `multipart/mixed` message built in
-    Dart and sent with `SendRawEmail`. In that path the SES destinations are
-    **only** `message.to`: `cc` and `bcc` are written as headers but are not
-    passed as destinations, so they may not be delivered. Put every real
-    recipient in `to` when sending attachments, or send a second message.
-    The raw path also always encodes in UTF-8, ignoring a custom `charset`.
+    Dart and sent with `SendRawEmail` to every `to`, `cc` and `bcc`
+    recipient (`To` and `Cc` headers, `bcc` only in the destinations). The
+    raw path always encodes in UTF-8, ignoring a custom `charset`. An
+    address or an attachment `mimeType` holding a control character (a
+    CR/LF would inject headers) is rejected: `AwsSesException` wrapping an
+    `ArgumentError`. Validate the addresses coming from users (a contact
+    form `replyTo`) before sending.
+  * A display name with non ASCII characters (`Équipe <team@example.com>`)
+    must be RFC 2047 encoded by the caller, on both paths.
 * `AwsSesAttachment(mimeType: 'application/pdf', filename: 'report.pdf',
   content: Uint8List)`. The bytes are base64 encoded into the MIME body, so
   the whole message is held in memory: keep attachments small and mind the
@@ -140,8 +144,7 @@ import 'dart:typed_data';
 import 'package:tekartik_aws_ses_node/aws_ses_node.dart';
 
 Future<void> sendReport(AwsSesClient client, List<String> recipients) async {
-  // With attachments only `to` is used as SES destination: put every
-  // recipient there, cc/bcc would only be headers.
+  // With attachments, the raw MIME path: to, cc and bcc all receive it.
   var result = await client.sendMail(
     AwsSesMessage(
       from: 'reports@example.com',
@@ -250,8 +253,9 @@ void main() {
 * Reading `awsSes` in code that also runs on the Dart VM or the browser: it
   throws `UnsupportedError`. Pass an `AwsSes`/`AwsSesClient` around instead,
   typed from `aws_ses_common.dart`.
-* Relying on `cc` or `bcc` when the message has attachments: only `to` is
-  used as SES destination on the raw MIME path.
+* Putting a user supplied address (contact form) in `replyTo`, `to` or
+  `cc` without validating it: with attachments a CR/LF in it is rejected
+  (`AwsSesException`), validate it first to give a proper error.
 * Forgetting `npm install @aws-sdk/client-ses`, or deploying without
   `node_modules`.
 * Hard coding the access key and secret in the source.

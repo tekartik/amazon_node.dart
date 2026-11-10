@@ -98,6 +98,49 @@ void main() {
       var end = lines.indexOf('--b-mixed', start);
       expect(utf8.decode(base64Decode(lines.sublist(start, end).join())), text);
     });
+    test('no header injection', () {
+      AwsSesMessage withAddresses({
+        String from = 'from@example.com',
+        List<String> to = const ['to@example.com'],
+        List<String>? cc,
+        List<String>? replyTo,
+        String mimeType = 'text/plain',
+      }) => AwsSesMessage(
+        from: from,
+        to: to,
+        cc: cc,
+        replyTo: replyTo,
+        subject: AwsSesContent(data: 'Subject'),
+        text: AwsSesContent(data: 'Hello'),
+        attachments: [
+          AwsSesAttachment(
+            mimeType: mimeType,
+            filename: 'a.txt',
+            content: Uint8List.fromList([65]),
+          ),
+        ],
+      );
+      var injected = 'visitor@example.com\r\nX-Injected: 1';
+      for (var message in [
+        withAddresses(from: injected),
+        withAddresses(to: [injected]),
+        withAddresses(cc: ['cc@example.com', injected]),
+        withAddresses(replyTo: [injected]),
+        withAddresses(replyTo: ['visitor@example.com\n\n--b-mixed']),
+        withAddresses(mimeType: 'text/plain\r\nX-Injected: 1'),
+      ]) {
+        expect(
+          () => sesRawMailMimeMessage(message, boundary: 'b'),
+          throwsArgumentError,
+        );
+      }
+      // Display names stay allowed
+      var mime = sesRawMailMimeMessage(
+        withAddresses(replyTo: ['Visitor <visitor@example.com>']),
+        boundary: 'b',
+      );
+      expect(mime, contains('\r\nReply-To: Visitor <visitor@example.com>\r\n'));
+    });
     test('non ascii filename and subject', () {
       var message = _message(filename: 'récap été.pdf');
       message = AwsSesMessage(

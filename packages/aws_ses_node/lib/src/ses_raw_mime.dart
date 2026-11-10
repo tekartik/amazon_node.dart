@@ -21,6 +21,9 @@ List<String> sesRawMailDestinations(AwsSesMessage message) => [
 
 /// Raw MIME message (CRLF line endings) of [message] with its attachments.
 ///
+/// Throws an [ArgumentError] when an address or an attachment mime type holds
+/// a control character (a CR/LF would inject headers).
+///
 /// [boundary] is the multipart boundary prefix, it must not appear in the
 /// content (base64 content never contains `=_`).
 String sesRawMailMimeMessage(
@@ -35,16 +38,17 @@ String sesRawMailMimeMessage(
     sb.write(_crlf);
   }
 
-  writeLine('From: ${message.from}');
-  if (message.to?.isNotEmpty ?? false) {
-    writeLine('To: ${message.to!.join(', ')}');
+  void writeAddressesHeader(String name, List<String>? addresses) {
+    if (addresses?.isNotEmpty ?? false) {
+      var values = addresses!.map((address) => _headerValue(name, address));
+      writeLine('$name: ${values.join(', ')}');
+    }
   }
-  if (message.cc?.isNotEmpty ?? false) {
-    writeLine('Cc: ${message.cc!.join(', ')}');
-  }
-  if (message.replyTo?.isNotEmpty ?? false) {
-    writeLine('Reply-To: ${message.replyTo!.join(', ')}');
-  }
+
+  writeAddressesHeader('From', [message.from]);
+  writeAddressesHeader('To', message.to);
+  writeAddressesHeader('Cc', message.cc);
+  writeAddressesHeader('Reply-To', message.replyTo);
   writeLine('Subject: ${_encodedWords(message.subject.data).join('$_crlf ')}');
   writeLine('MIME-Version: 1.0');
   writeLine('Content-Type: multipart/mixed; boundary="$mixedBoundary"');
@@ -94,7 +98,8 @@ String sesRawMailMimeMessage(
   for (var attachment in message.attachments ?? const <AwsSesAttachment>[]) {
     var filename = _parameterValue(attachment.filename);
     writeLine('--$mixedBoundary');
-    writeLine('Content-Type: ${attachment.mimeType}; name=$filename');
+    var mimeType = _headerValue('Content-Type', attachment.mimeType);
+    writeLine('Content-Type: $mimeType; name=$filename');
     writeLine('Content-Disposition: attachment; filename=$filename');
     writeLine('Content-Transfer-Encoding: base64');
     writeLine();
@@ -102,6 +107,19 @@ String sesRawMailMimeMessage(
   }
   writeLine('--$mixedBoundary--');
   return sb.toString();
+}
+
+/// [value] written as is in the header [name]: a control character (CR/LF)
+/// would inject headers or content, it throws an [ArgumentError].
+String _headerValue(String name, String value) {
+  if (value.codeUnits.any((unit) => unit < 0x20 || unit == 0x7f)) {
+    throw ArgumentError.value(
+      value,
+      name,
+      'Control character in a mail header value',
+    );
+  }
+  return value;
 }
 
 bool _isPrintableAscii(String text) =>

@@ -82,7 +82,9 @@ abstract class AwsSesClient {
   ///
   /// Returns the [AwsSesSendMailResult] describing the outcome.
   ///
-  /// Throws an [AwsSesException] if SES rejects the request.
+  /// Throws an [AwsSesException] if SES rejects the request, or when the
+  /// message has attachments and an address or a mime type holds a control
+  /// character (a CR/LF would inject mail headers).
   Future<AwsSesSendMailResult> sendMail(AwsSesMessage message);
 }
 
